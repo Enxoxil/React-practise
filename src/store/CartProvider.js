@@ -6,21 +6,23 @@ const defaultCartState = {
   totalAmount: 0,
 };
 
+// TODO Исправить добавление количества позиций в корзине
 const cartReducer = (state, action) => {
   if (action.type === "ADD") {
-    const updatedTotalAmount =
-      state.totalAmount + action.payload.price * action.payload.amount;
     const existingCartItemIndex = state.items.findIndex(
       (item) => item.id === action.payload.id
     );
-    const existingCartItem = state.items[existingCartItemIndex];
 
+    const existingItem = state.items[existingCartItemIndex];
     let updatedItems;
 
-    if (existingCartItem) {
+    const updatedTotalAmount =
+      state.totalAmount + action.payload.price * action.payload.amount;
+
+    if (existingItem) {
       const updatedItem = {
-        ...existingCartItem,
-        amount: existingCartItem.amount + action.payload.amount,
+        ...existingItem,
+        amount: existingItem.amount + action.payload.amount,
       };
       updatedItems = [...state.items];
       updatedItems[existingCartItemIndex] = updatedItem;
@@ -37,7 +39,9 @@ const cartReducer = (state, action) => {
     const existingCartItemIndex = state.items.findIndex(
       (item) => item.id === action.payload
     );
+
     let updatedItems;
+
     const existingItem = state.items[existingCartItemIndex];
     const updatedTotalAmount = state.totalAmount - existingItem.price;
     if (existingItem.amount === 1) {
@@ -55,6 +59,7 @@ const cartReducer = (state, action) => {
       totalAmount: updatedTotalAmount,
     };
   }
+
   return defaultCartState;
 };
 
