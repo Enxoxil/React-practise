@@ -6,7 +6,6 @@ import CartProvider from "./store/CartProvider.js";
 
 const App = () => {
   const [cartIsShown, setCartIsShown] = useState(false);
-
   const showCartHandler = () => {
     setCartIsShown(true);
   };
