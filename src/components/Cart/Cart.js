@@ -8,6 +8,9 @@ import Checkout from "./Checkout.js";
 const Cart = (props) => {
   const cartCtx = useContext(CartContext);
   const [isOrder, setIsOrder] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [didSubmit, setDidSubmit] = useState(false);
+
   const totalAmount = `$${cartCtx.totalAmount.toFixed(2)}`;
   const hasItems = cartCtx.items.length > 0;
   const cartItemRemoveHandler = (id) => {
@@ -20,14 +23,18 @@ const Cart = (props) => {
     setIsOrder(true);
   };
 
-  const confirmOrderHandler = (userData) => {
-    fetch("https://meal-5c1ef-default-rtdb.firebaseio.com/orders.json", {
+  const confirmOrderHandler = async (userData) => {
+    setIsSubmitting(true);
+    await fetch("https://meal-5c1ef-default-rtdb.firebaseio.com/orders.json", {
       method: "POST",
       body: JSON.stringify({
         user: userData,
         orderedItems: cartCtx.items,
       }),
     });
+    setIsSubmitting(false);
+    setDidSubmit(true);
+    cartCtx.clear();
   };
   const cartItems = (
     <ul className={classes["cart-items"]}>
@@ -56,9 +63,8 @@ const Cart = (props) => {
       )}{" "}
     </div>
   );
-
-  return (
-    <Modal onHideCart={props.onHideCart}>
+  const cartModalContent = (
+    <>
       {cartItems}
       <div className={classes.total}>
         <span>Total amount</span>
@@ -69,6 +75,28 @@ const Cart = (props) => {
         <Checkout onConfirm={confirmOrderHandler} onCancel={props.onHideCart} />
       )}
       {!isOrder && actions}
+    </>
+  );
+  const submitContent = (
+    <>
+      <p>Sending...</p>
+    </>
+  );
+  const didSubmitContent = (
+    <>
+      <p>Done!</p>
+      <div className={classes.actions}>
+        <button className={classes.button} onClick={props.onHideCart}>
+          Close
+        </button>
+      </div>
+    </>
+  );
+  return (
+    <Modal onHideCart={props.onHideCart}>
+      {isSubmitting && !didSubmit && submitContent}
+      {didSubmit && !isSubmitting && didSubmitContent}
+      {!didSubmit && !isSubmitting && cartModalContent}
     </Modal>
   );
 };
