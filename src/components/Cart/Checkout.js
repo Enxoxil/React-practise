@@ -27,7 +27,7 @@ const Checkout = (props) => {
 
     const enteredNameIsValid = !isEmpty(enteredName);
     const enteredStreetIsValid = !isEmpty(enteredStreet);
-    const enteredPostalCodeIsValid = !isFiveChars(enteredPostalCode);
+    const enteredPostalCodeIsValid = isFiveChars(enteredPostalCode);
     const enteredCityIsValid = !isEmpty(enteredCity);
 
     setFormValidity({
@@ -46,6 +46,12 @@ const Checkout = (props) => {
     if (!formIsValid) {
       return;
     }
+    props.onConfirm({
+      name: enteredName,
+      street: enteredStreet,
+      postalCode: enteredPostalCode,
+      city: enteredCity,
+    });
   };
 
   return (
@@ -63,7 +69,7 @@ const Checkout = (props) => {
       <div className={classes.control}>
         <label htmlFor="postal">Postal Code</label>
         <input type="text" id="postal" ref={postalCodeInputRef} />
-        {formValidity.postal && <p>Enter valid postal</p>}
+        {!formValidity.postal && <p>Enter valid postal</p>}
       </div>
       <div className={classes.control}>
         <label htmlFor="city">City</label>
@@ -74,7 +80,9 @@ const Checkout = (props) => {
         <button type="button" onClick={props.onCancel}>
           Cancel
         </button>
-        <button className={classes.submit}>Confirm</button>
+        <button type="submit" className={classes.submit}>
+          Confirm
+        </button>
       </div>
     </form>
   );
